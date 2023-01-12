@@ -1,3 +1,16 @@
+# == Schema Information
+#
+# Table name: teams
+#
+#  id              :integer          not null, primary key
+#  name            :string
+#  slug            :string
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  being_destroyed :boolean
+#  time_zone       :string
+#  locale          :string
+#
 class Team < ApplicationRecord
   include Teams::Base
   include Webhooks::Outgoing::TeamSupport

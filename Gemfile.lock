@@ -89,6 +89,9 @@ GEM
       tzinfo (~> 2.0)
     addressable (2.8.1)
       public_suffix (>= 2.0.2, < 6.0)
+    annotate (3.2.0)
+      activerecord (>= 3.2, < 8.0)
+      rake (>= 10.4, < 14.0)
     ast (2.4.2)
     awesome_print (1.9.2)
     aws-eventstream (1.2.0)
@@ -267,6 +270,8 @@ GEM
     factory_bot_rails (6.2.0)
       factory_bot (~> 6.2.0)
       railties (>= 5.0.0)
+    faker (3.1.0)
+      i18n (>= 1.8.11, < 2)
     faraday (2.7.2)
       faraday-net_http (>= 2.0, < 3.1)
       ruby2_keywords (>= 0.0.4)
@@ -578,6 +583,7 @@ PLATFORMS
 
 DEPENDENCIES
   active_hash!
+  annotate
   aws-sdk-s3
   bootsnap
   bullet_train
@@ -601,6 +607,7 @@ DEPENDENCIES
   devise
   devise-two-factor
   factory_bot_rails
+  faker
   foreman
   honeybadger
   jbuilder
