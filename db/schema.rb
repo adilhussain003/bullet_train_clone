@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_31_003438) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_11_121254) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -118,6 +118,12 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_31_003438) do
     t.index ["membership_id"], name: "index_tangible_things_reassignments_on_membership_id"
   end
 
+  create_table "motivations", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "oauth_access_grants", force: :cascade do |t|
     t.bigint "resource_owner_id", null: false
     t.bigint "application_id", null: false
@@ -175,6 +181,24 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_31_003438) do
     t.index ["user_id"], name: "index_oauth_stripe_accounts_on_user_id"
   end
 
+  create_table "question_motivations", force: :cascade do |t|
+    t.bigint "motivation_id", null: false
+    t.bigint "question_id", null: false
+    t.integer "score"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["motivation_id"], name: "index_question_motivations_on_motivation_id"
+    t.index ["question_id"], name: "index_question_motivations_on_question_id"
+  end
+
+  create_table "questions", force: :cascade do |t|
+    t.string "question"
+    t.bigint "motivationer_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["motivationer_id"], name: "index_questions_on_motivationer_id"
+  end
+
   create_table "scaffolding_absolutely_abstract_creative_concepts", force: :cascade do |t|
     t.bigint "team_id", null: false
     t.string "name"
@@ -227,6 +251,40 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_31_003438) do
     t.index ["tangible_thing_id"], name: "index_tangible_things_assignments_on_tangible_thing_id"
   end
 
+  create_table "survey_questions", force: :cascade do |t|
+    t.bigint "survey_id", null: false
+    t.bigint "question_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["question_id"], name: "index_survey_questions_on_question_id"
+    t.index ["survey_id"], name: "index_survey_questions_on_survey_id"
+  end
+
+  create_table "survey_responses", force: :cascade do |t|
+    t.string "response"
+    t.bigint "survey_id", null: false
+    t.bigint "question_id", null: false
+    t.bigint "user_id", null: false
+    t.integer "response_score_1_to_10"
+    t.integer "response_score_negative_5_to_5"
+    t.integer "caculated_change_in_motivation"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["question_id"], name: "index_survey_responses_on_question_id"
+    t.index ["survey_id"], name: "index_survey_responses_on_survey_id"
+    t.index ["user_id"], name: "index_survey_responses_on_user_id"
+  end
+
+  create_table "surveys", force: :cascade do |t|
+    t.bigint "creator_id", null: false
+    t.bigint "motivation_id", null: false
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["creator_id"], name: "index_surveys_on_creator_id"
+    t.index ["motivation_id"], name: "index_surveys_on_motivation_id"
+  end
+
   create_table "teams", id: :serial, force: :cascade do |t|
     t.string "name"
     t.string "slug"
@@ -235,6 +293,25 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_31_003438) do
     t.boolean "being_destroyed"
     t.string "time_zone"
     t.string "locale"
+  end
+
+  create_table "user_motivations", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "motivation_id", null: false
+    t.integer "score"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["motivation_id"], name: "index_user_motivations_on_motivation_id"
+    t.index ["user_id"], name: "index_user_motivations_on_user_id"
+  end
+
+  create_table "user_surveys", force: :cascade do |t|
+    t.bigint "survey_id", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["survey_id"], name: "index_user_surveys_on_survey_id"
+    t.index ["user_id"], name: "index_user_surveys_on_user_id"
   end
 
   create_table "users", id: :serial, force: :cascade do |t|
@@ -355,12 +432,26 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_31_003438) do
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_applications", "teams"
   add_foreign_key "oauth_stripe_accounts", "users"
+  add_foreign_key "question_motivations", "motivations"
+  add_foreign_key "question_motivations", "questions"
+  add_foreign_key "questions", "questions", column: "motivationer_id"
   add_foreign_key "scaffolding_absolutely_abstract_creative_concepts", "teams"
   add_foreign_key "scaffolding_absolutely_abstract_creative_concepts_collaborators", "memberships"
   add_foreign_key "scaffolding_absolutely_abstract_creative_concepts_collaborators", "scaffolding_absolutely_abstract_creative_concepts", column: "creative_concept_id"
   add_foreign_key "scaffolding_completely_concrete_tangible_things", "scaffolding_absolutely_abstract_creative_concepts", column: "absolutely_abstract_creative_concept_id"
   add_foreign_key "scaffolding_completely_concrete_tangible_things_assignments", "memberships"
   add_foreign_key "scaffolding_completely_concrete_tangible_things_assignments", "scaffolding_completely_concrete_tangible_things", column: "tangible_thing_id"
+  add_foreign_key "survey_questions", "questions"
+  add_foreign_key "survey_questions", "surveys"
+  add_foreign_key "survey_responses", "questions"
+  add_foreign_key "survey_responses", "surveys"
+  add_foreign_key "survey_responses", "users"
+  add_foreign_key "surveys", "motivations"
+  add_foreign_key "surveys", "surveys", column: "creator_id"
+  add_foreign_key "user_motivations", "motivations"
+  add_foreign_key "user_motivations", "users"
+  add_foreign_key "user_surveys", "surveys"
+  add_foreign_key "user_surveys", "users"
   add_foreign_key "users", "oauth_applications", column: "platform_agent_of_id"
   add_foreign_key "webhooks_outgoing_endpoints", "scaffolding_absolutely_abstract_creative_concepts"
   add_foreign_key "webhooks_outgoing_endpoints", "teams"
